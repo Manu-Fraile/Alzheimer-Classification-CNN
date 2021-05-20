@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+import tensorflow.python.keras.losses as tfloss
 from tensorflow.keras import layers, models
 import matplotlib.pyplot as plt
 
@@ -14,6 +15,24 @@ def LoadDataset():
     return x_train, x_valid, x_test, y_train, y_valid, y_test
 
 
+def SaveResults(history, model):
+
+    PlotAccuracy(history)
+    PlotLoss(history)
+
+    test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
+    testf = open('./Results_Densenet121/test_results.txt', 'w')
+    testf.write('The test loss: ' + str(test_loss) + '\nThe test accuracy: ' + str(test_acc))
+    testf.close()
+
+    preds = model.predict(x_test)
+    label_preds = np.argmax(preds, axis=1)
+    predsf = open('./Results_Densenet121/predictions.txt', 'w')
+    predsf.write('The predicted labels are:\n')
+    predsf.write(str(label_preds))
+    predsf.close()
+
+
 def PlotAccuracy(history):
     plt.figure(1)
     plt.plot(history.history['accuracy'], label='accuracy')
@@ -22,8 +41,7 @@ def PlotAccuracy(history):
     plt.ylabel('Accuracy')
     # plt.ylim([0.5, 1])
     plt.legend(loc='lower right')
-    plt.show()
-
+    plt.savefig('./Results_Densenet121/plots/accuracy121.png')
 
 def PlotLoss(history):
     plt.figure(2)
@@ -33,7 +51,7 @@ def PlotLoss(history):
     plt.ylabel('Loss')
     # plt.ylim([0.5, 1])
     plt.legend(loc='lower right')
-    plt.show()
+    plt.savefig('./Results_Densenet121/plots/loss121.png')
 
 
 if __name__ == '__main__':
@@ -46,9 +64,9 @@ if __name__ == '__main__':
     x_train, x_valid, x_test, y_train, y_valid, y_test = LoadDataset()
 
     model = tf.keras.applications.DenseNet121(weights=None, include_top=False,
-                                              input_shape=(176, 208, 1), pooling='avg')
+                                              input_shape=(x_train.shape[1], x_train.shape[2], 1), pooling='avg')
 
-    out = layers.Dense(4, activation='softmax')(model.output)
+    out = layers.Dense(2, activation='softmax')(model.output)
 
     full_model = models.Model(inputs=model.input, outputs=out)
 
@@ -56,17 +74,20 @@ if __name__ == '__main__':
                                   momentum=0.9,
                                   nesterov=True)
 
-    loss = tf.keras.losses.CategoricalCrossentropy(from_logits=False)
+    #loss = tf.keras.losses.CategoricalCrossentropy(from_logits=False)
+    loss = tfloss.BinaryCrossentropy(from_logits=False)
 
     early_stop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0.0001, patience=6, verbose=0,
                                                   mode='auto', baseline=None, restore_best_weights=False)
 
-    full_model.compile(optimizer=opt, loss=loss, metrics=['accuracy'])
+    full_model.compile(optimizer='adam', loss=loss, metrics=['accuracy'])
+
+    class_weights = {0: len(y_train[y_train[:, 1] == 1]) / len(y_train),
+                     1: len(y_train[y_train[:, 0] == 1]) / len(y_train)}
 
     history = full_model.fit(x=x_train, y=y_train, batch_size=64, epochs=150, verbose=1, callbacks=early_stop,
-                             validation_data=(x_valid, y_valid), shuffle=True, class_weight=None, sample_weight=None,
+                             validation_data=(x_valid, y_valid), shuffle=True, class_weight=class_weights, sample_weight=None,
                              initial_epoch=0, steps_per_epoch=None, validation_steps=None, validation_batch_size=None,
                              validation_freq=1, max_queue_size=10, workers=1, use_multiprocessing=False)
 
-    PlotAccuracy(history)
-    PlotLoss(history)
+    SaveResults(history, full_model)
