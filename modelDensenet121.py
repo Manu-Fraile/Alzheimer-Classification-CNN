@@ -4,6 +4,7 @@ import tensorflow.python.keras.losses as tfloss
 from tensorflow.keras import layers, models
 import matplotlib.pyplot as plt
 
+
 def LoadDataset():
     x_train = np.load('./Datasets/coronal_full_binary_data/x_train.npy')
     x_valid = np.load('./Datasets/coronal_full_binary_data/x_valid.npy')
@@ -16,18 +17,17 @@ def LoadDataset():
 
 
 def SaveResults(history, model):
-
     PlotAccuracy(history)
     PlotLoss(history)
 
     test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
-    testf = open('./Results_Densenet121/test_results.txt', 'w')
+    testf = open('./Results_Densenet121/testResults121.txt', 'w')
     testf.write('The test loss: ' + str(test_loss) + '\nThe test accuracy: ' + str(test_acc))
     testf.close()
 
     preds = model.predict(x_test)
     label_preds = np.argmax(preds, axis=1)
-    predsf = open('./Results_Densenet121/predictions.txt', 'w')
+    predsf = open('./Results_Densenet121/predictions121.txt', 'w')
     predsf.write('The predicted labels are:\n')
     predsf.write(str(label_preds))
     predsf.close()
@@ -39,9 +39,9 @@ def PlotAccuracy(history):
     plt.plot(history.history['val_accuracy'], label='val_accuracy')
     plt.xlabel('Epoch')
     plt.ylabel('Accuracy')
-    # plt.ylim([0.5, 1])
     plt.legend(loc='lower right')
     plt.savefig('./Results_Densenet121/plots/accuracy121.png')
+
 
 def PlotLoss(history):
     plt.figure(2)
@@ -49,7 +49,6 @@ def PlotLoss(history):
     plt.plot(history.history['val_loss'], label='val_loss')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
-    # plt.ylim([0.5, 1])
     plt.legend(loc='lower right')
     plt.savefig('./Results_Densenet121/plots/loss121.png')
 
@@ -85,7 +84,10 @@ if __name__ == '__main__':
     class_weights = {0: len(y_train[y_train[:, 1] == 1]) / len(y_train),
                      1: len(y_train[y_train[:, 0] == 1]) / len(y_train)}
 
-    history = full_model.fit(x=x_train, y=y_train, batch_size=64, epochs=150, verbose=1, callbacks=early_stop,
+    #print('\n\nTHE WEIGHTS OF THE CLASSES ARE:' )
+    #print(class_weights)
+
+    history = full_model.fit(x=x_train, y=y_train, batch_size=64, epochs=100, verbose=1, callbacks=early_stop,
                              validation_data=(x_valid, y_valid), shuffle=True, class_weight=class_weights, sample_weight=None,
                              initial_epoch=0, steps_per_epoch=None, validation_steps=None, validation_batch_size=None,
                              validation_freq=1, max_queue_size=10, workers=1, use_multiprocessing=False)
