@@ -130,3 +130,7 @@ dmypy.json
 
 # pycharm idea
 .idea
+
+# datafiles
+axial_full_binary_data/*
+coronal_full_binary_data/*
