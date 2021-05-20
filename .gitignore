@@ -132,5 +132,5 @@ dmypy.json
 .idea
 
 # datafiles
-axial_full_binary_data/*
-coronal_full_binary_data/*
+Datasets/axial_full_binary_data/*
+Datasets/coronal_full_binary_data/*
