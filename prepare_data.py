@@ -40,7 +40,7 @@ def prepare_mri(path):
 
 
 if __name__ == '__main__':
-    folder_path = '../DataSliced_axial_full/DataSliced/'
+    folder_path = '../DataSliced_coronal_full/DataSliced/'
 
     # get labels, they will be binary by default, if want multiclass, add 'multiclass' as argument
     y_train = prepare_labels(folder_path + 'train_labels.npy')
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     x_test = prepare_mri(folder_path + 'Test/')
 
     # save
-    save_folder = 'axial_full_binary_data/'
+    save_folder = '../coronal_full_binary_data/'
     np.save(save_folder + 'y_train.npy', y_train)
     np.save(save_folder + 'y_valid.npy', y_valid)
     np.save(save_folder + 'y_test.npy', y_test)
