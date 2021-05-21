@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 
 
 def LoadDataset():
-    x_train = np.load('./Datasets/coronal_full_binary_data/x_train.npy')
-    x_valid = np.load('./Datasets/coronal_full_binary_data/x_valid.npy')
-    x_test = np.load('./Datasets/coronal_full_binary_data/x_test.npy')
-    y_train = np.load('./Datasets/coronal_full_binary_data/y_train.npy')
-    y_valid = np.load('./Datasets/coronal_full_binary_data/y_valid.npy')
-    y_test = np.load('./Datasets/coronal_full_binary_data/y_test.npy')
+    x_train = np.load('./Datasets/Data_Axial_200_Rot/x_train.npy')
+    x_valid = np.load('./Datasets/Data_Axial_200_Rot/x_valid.npy')
+    x_test = np.load('./Datasets/Data_Axial_200_Rot/x_test.npy')
+    y_train = np.load('./Datasets/Data_Axial_200_Rot/y_train.npy')
+    y_valid = np.load('./Datasets/Data_Axial_200_Rot/y_valid.npy')
+    y_test = np.load('./Datasets/Data_Axial_200_Rot/y_test.npy')
 
     return x_train, x_valid, x_test, y_train, y_valid, y_test
 
@@ -21,13 +21,13 @@ def SaveResults(history, model):
     PlotLoss(history)
 
     test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
-    testf = open('./Results_Densenet121/testResults121.txt', 'w')
+    testf = open('./Results_Densenet121/ntestResults121.txt', 'w')
     testf.write('The test loss: ' + str(test_loss) + '\nThe test accuracy: ' + str(test_acc))
     testf.close()
 
     preds = model.predict(x_test)
     label_preds = np.argmax(preds, axis=1)
-    predsf = open('./Results_Densenet121/predictions121.txt', 'w')
+    predsf = open('./Results_Densenet121/npredictions121.txt', 'w')
     predsf.write('The predicted labels are:\n')
     predsf.write(str(label_preds))
     predsf.close()
@@ -40,7 +40,7 @@ def PlotAccuracy(history):
     plt.xlabel('Epoch')
     plt.ylabel('Accuracy')
     plt.legend(loc='lower right')
-    plt.savefig('./Results_Densenet121/plots/accuracy121.png')
+    plt.savefig('./Results_Densenet121/plots/naccuracy121.png')
 
 
 def PlotLoss(history):
@@ -50,7 +50,7 @@ def PlotLoss(history):
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.legend(loc='lower right')
-    plt.savefig('./Results_Densenet121/plots/loss121.png')
+    plt.savefig('./Results_Densenet121/plots/nloss121.png')
 
 
 if __name__ == '__main__':
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     early_stop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0.0001, patience=6, verbose=0,
                                                   mode='auto', baseline=None, restore_best_weights=False)
 
-    full_model.compile(optimizer='adam', loss=loss, metrics=['accuracy'])
+    full_model.compile(optimizer=opt, loss=loss, metrics=['accuracy'])
 
     class_weights = {0: len(y_train[y_train[:, 1] == 1]) / len(y_train),
                      1: len(y_train[y_train[:, 0] == 1]) / len(y_train)}
@@ -87,8 +87,8 @@ if __name__ == '__main__':
     #print('\n\nTHE WEIGHTS OF THE CLASSES ARE:' )
     #print(class_weights)
 
-    history = full_model.fit(x=x_train, y=y_train, batch_size=64, epochs=100, verbose=1, callbacks=early_stop,
-                             validation_data=(x_valid, y_valid), shuffle=True, class_weight=class_weights, sample_weight=None,
+    history = full_model.fit(x=x_train, y=y_train, batch_size=32, epochs=100, verbose=1, callbacks=early_stop,
+                             validation_data=(x_valid, y_valid), shuffle=True, class_weight=None, sample_weight=None,
                              initial_epoch=0, steps_per_epoch=None, validation_steps=None, validation_batch_size=None,
                              validation_freq=1, max_queue_size=10, workers=1, use_multiprocessing=False)
 
