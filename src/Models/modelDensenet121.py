@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 
 
 def LoadDataset():
-    x_train = np.load('./Datasets/Data_Axial_200_Rot/x_train.npy')
-    x_valid = np.load('./Datasets/Data_Axial_200_Rot/x_valid.npy')
-    x_test = np.load('./Datasets/Data_Axial_200_Rot/x_test.npy')
-    y_train = np.load('./Datasets/Data_Axial_200_Rot/y_train.npy')
-    y_valid = np.load('./Datasets/Data_Axial_200_Rot/y_valid.npy')
-    y_test = np.load('./Datasets/Data_Axial_200_Rot/y_test.npy')
+    x_train = np.load('../../Datasets/Data_Axial_200_Rot/x_train.npy')
+    x_valid = np.load('../../Datasets/Data_Axial_200_Rot/x_valid.npy')
+    x_test = np.load('../../Datasets/Data_Axial_200_Rot/x_test.npy')
+    y_train = np.load('../../Datasets/Data_Axial_200_Rot/y_train.npy')
+    y_valid = np.load('../../Datasets/Data_Axial_200_Rot/y_valid.npy')
+    y_test = np.load('../../Datasets/Data_Axial_200_Rot/y_test.npy')
 
     x_train_3 = np.repeat(x_train[..., np.newaxis], 3, -1)
     x_valid_3 = np.repeat(x_valid[..., np.newaxis], 3, -1)
@@ -41,6 +41,8 @@ def SaveResults(history, model):
     predsf.write('The predicted labels are:\n')
     predsf.write(str(label_preds))
     predsf.close()
+
+    # full_model.save('./Models/Densenet121/weight_decay.h5')
 
 
 def PlotAccuracy(history):
@@ -100,23 +102,15 @@ if __name__ == '__main__':
 
         full_model.compile(optimizer=opt_decay, loss=loss, metrics=['accuracy'])
 
-
         class_weights = {0: len(y_train[y_train[:, 1] == 1]) / len(y_train),
                          1: len(y_train[y_train[:, 0] == 1]) / len(y_train)}
-
-        #print('\n\nTHE WEIGHTS OF THE CLASSES ARE:' )
-        #print(class_weights)
 
         history = full_model.fit(x=x_train, y=y_train, batch_size=32, epochs=20, verbose=1, callbacks=mcp_save,
                                  validation_data=(x_valid, y_valid), shuffle=True, class_weight=None, sample_weight=None,
                                  initial_epoch=0, steps_per_epoch=None, validation_steps=None, validation_batch_size=None,
                                  validation_freq=1, max_queue_size=10, workers=1, use_multiprocessing=False)
 
-        #best_model = save_best_model.best_model
-
         SaveResults(history, full_model)
-
-        #full_model.save('./Models/Densenet121/weight_decay.h5')
 
     else:
         model = tf.keras.models.load_model('./Models/Densenet121/weight_decay_best.h5')

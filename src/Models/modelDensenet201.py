@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 
 
 def LoadDataset():
-    x_train = np.load('./Datasets/coronal_full_binary_data/x_train.npy')
-    x_valid = np.load('./Datasets/coronal_full_binary_data/x_valid.npy')
-    x_test = np.load('./Datasets/coronal_full_binary_data/x_test.npy')
-    y_train = np.load('./Datasets/coronal_full_binary_data/y_train.npy')
-    y_valid = np.load('./Datasets/coronal_full_binary_data/y_valid.npy')
-    y_test = np.load('./Datasets/coronal_full_binary_data/y_test.npy')
+    x_train = np.load('../../Datasets/coronal_full_binary_data/x_train.npy')
+    x_valid = np.load('../../Datasets/coronal_full_binary_data/x_valid.npy')
+    x_test = np.load('../../Datasets/coronal_full_binary_data/x_test.npy')
+    y_train = np.load('../../Datasets/coronal_full_binary_data/y_train.npy')
+    y_valid = np.load('../../Datasets/coronal_full_binary_data/y_valid.npy')
+    y_test = np.load('../../Datasets/coronal_full_binary_data/y_test.npy')
 
     return x_train, x_valid, x_test, y_train, y_valid, y_test
 
