@@ -16,3 +16,6 @@ The goal of this work is to develop an algorithm that classifies images in order
 [3] Marcus DS, Wang TH, Parker J, Csernansky JG, Morris JC, Buckner RL (2007) Open access series of imaging studies (OASIS): cross-sectional MRI data in young, middle aged, nondemented, and demented older adults. J Cogn Neurosci 19(9):1498–1507
 
 [4] http://adni.loni.usc.edu (23.04.2021)
+
+## Setup
+Datasets are all zipped. Remember tu unzip them in THE SAME FOLDER (/datasets)
