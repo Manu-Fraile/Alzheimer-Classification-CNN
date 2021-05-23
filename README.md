@@ -19,3 +19,8 @@ The goal of this work is to develop an algorithm that classifies images in order
 
 ## Setup
 Datasets are all zipped. Remember tu unzip them in THE SAME FOLDER (/datasets)
+
+Install: 
+```
+git clone https://github.com/Manu-Fraile/Alzheimer-Classification-CNN.git
+```
