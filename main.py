@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+import os
+import errno
 
 from src.ModelAlgorithms.Densenet121 import Densenet121
 from src.ModelAlgorithms.Densenet169 import Densenet169
@@ -23,29 +25,30 @@ def LoadDataset(datasetRoute):
     return x_train_3, x_valid_3, x_test_3, y_train, y_valid, y_test
 
 
-def SaveResults(history, model, modelRoute):
-    PlotAccuracy(history, modelRoute)
-    PlotLoss(history, modelRoute)
+def SaveResults(history, model, experimentRoute):
+    PlotAccuracy(history, experimentRoute)
+    PlotLoss(history, experimentRoute)
 
     test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
-    testf = open('./experiments/experiment001/results.txt', 'w')
+    testf = open(experimentRoute + 'results.txt', 'w')
+    testf.write('+++++   LAST MODEL   +++++')
     testf.write('The test loss: ' + str(test_loss) + '\nThe test accuracy: ' + str(test_acc))
     testf.close()
 
     preds = model.predict(x_test)
-    probsf = open('./experiments/experiment001/probabilities.txt', 'w')
+    probsf = open(experimentRoute + 'probabilities.txt', 'w')
     probsf.write('The probability labels are:\n')
     probsf.write(str(preds))
     probsf.close()
 
     label_preds = np.argmax(preds, axis=1)
-    predsf = open('./experiments/experiment001/predictions121.txt', 'w')
+    predsf = open(experimentRoute + 'predictions.txt', 'w')
     predsf.write('The predicted labels are:\n')
     predsf.write(str(label_preds))
     predsf.close()
 
 
-def PlotAccuracy(history, modelRoute):
+def PlotAccuracy(history, experimentRoute):
     plt.figure(1)
     plt.grid(True)
     plt.plot(history.history['accuracy'], label='accuracy')
@@ -54,10 +57,12 @@ def PlotAccuracy(history, modelRoute):
     plt.ylabel('Accuracy')
     plt.ylim(bottom=0)
     plt.legend(loc='lower right')
-    plt.savefig('.' + modelRoute + 'accuracy121.png')
+
+    CheckRoute(experimentRoute + '/plots/')
+    plt.savefig(experimentRoute + 'plots/accuracy.png')
 
 
-def PlotLoss(history, modelRoute):
+def PlotLoss(history, experimentRoute):
     plt.figure(2)
     plt.grid(True)
     plt.plot(history.history['loss'], label='loss')
@@ -66,31 +71,46 @@ def PlotLoss(history, modelRoute):
     plt.ylabel('Loss')
     plt.ylim(bottom=0)
     plt.legend(loc='lower right')
-    plt.savefig('.' + modelRoute + 'loss121.png')
 
+    CheckRoute(experimentRoute + '/plots')
+    plt.savefig(experimentRoute + '/plots/loss.png')
+
+def CheckRoute(filePath):
+    if not os.path.exists(os.path.dirname(filePath)):
+        try:
+            os.makedirs(os.path.dirname(filePath))
+        except OSError as exc:  # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
 
 def LoadModel(file):
-    model = tf.keras.models.load_model(file)
+    model = tf.keras.models.load_model(modelRoute + 'trained_model.h5')
 
     return model
 
 
 def EvaluateModel(model, x_test, y_test):
     test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
+    print('+++++   BEST MODEL   +++++')
     print('The test loss: ' + str(test_loss) + '\nThe test accuracy: ' + str(test_acc))
 
 
 if __name__ == "__main__":
 
-    # Variables to manually custom:
+    # SETUP VARIABLES:
     # train
     # saveModel
     # modelRoute ex: '/models/model001/'
     # datasetRoute ex: './datasets/Data_Axial_200_Rot/'
+    # datasetRoute = './datasets/Data_Axial_200_Rot/'
     # ALWAYS PUT THE LAST BAR IN ROUTES
 
-    train = True
-    modelRoute = '/models/model001/'
+    train = False
+
+    modelRoute = './models/model001/'
+    CheckRoute(modelRoute)
+    experimentRoute = './experiments/experiment001/'
+    CheckRoute(experimentRoute)
     datasetRoute = './datasets/Data_Axial_200_Rot/'
 
     device_name = tf.test.gpu_device_name()
@@ -101,15 +121,39 @@ if __name__ == "__main__":
     x_train, x_valid, x_test, y_train, y_valid, y_test = LoadDataset(datasetRoute)
 
     if train:
-        saveModel = False
+        # MODEL TUNING VARIABLES:
+        # pre_weights = None / 'imagenet'
+        # activation = 'softmax' / 'sigmoid'
+        # learning_rate = float
+        # momentum = float
+        # weight_decay = float / None
+        # batch_size = int, e.g. 32
+        # epochs = int
+        # classes = 2 / 4
+        # early_stop = True / False
+        # save_model = True / False
+        pre_weights = 'imagenet'
+        activation = 'softmax'
+        learning_rate = 0.01
+        momentum = 0.9
+        weight_decay = None
+        batch_size = 32
+        epochs = 40
+        nclasses = 2
+        early_stop = False
+        save_model = True
 
         data = [x_train, x_valid, x_test, y_train, y_valid, y_test]
-        selectedModel = Densenet121(data, saveModel)
+        selectedModel = Densenet121(data, modelRoute)
+        #selectedModel = Densenet169(data, modelRoute)
+        #selectedModel = Densenet201(data, modelRoute)
+        #selectedModel = DensenetCustom(data, modelRoute)
 
-        model, history = selectedModel.Train()
+        model, history = selectedModel.Train(pre_weights, activation, learning_rate,  momentum,
+                                             weight_decay, batch_size, epochs, nclasses, early_stop,
+                                             save_model)
 
-        PlotAccuracy(history, modelRoute)
-        PlotAccuracy(history, modelRoute)
+        SaveResults(history, model, experimentRoute)
 
     else:
         model = LoadModel(modelRoute)
