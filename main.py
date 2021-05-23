@@ -99,18 +99,20 @@ if __name__ == "__main__":
 
     # SETUP VARIABLES:
     # train
-    # modelRoute ex: '/models/model001/'
-    # datasetRoute ex: './datasets/Data_Axial_200_Rot/'
-    # datasetRoute = './datasets/Data_Axial_200_Rot/'
-    # ALWAYS PUT THE LAST BAR IN ROUTES
+    # model_name = 'model001'
+    # experiment_name = 'experiment001'
+    # dataset_name = 'Data_Axial_200_Rot'
 
     train = False
+    model_name = 'model001'
+    experiment_name = 'experiment001'
+    dataset_name = 'Data_Axial_200_Rot'
 
-    modelRoute = './models/model001/'
+    modelRoute = './models/' + model_name + '/'
     CheckRoute(modelRoute)
-    experimentRoute = './experiments/experiment001/'
+    experimentRoute = './experiments/' + experiment_name + '/'
     CheckRoute(experimentRoute)
-    datasetRoute = './datasets/Data_Axial_200_Rot/'
+    datasetRoute = './datasets/' + dataset_name + '/'
 
     device_name = tf.test.gpu_device_name()
     if device_name != '/device:GPU:0':
@@ -120,6 +122,7 @@ if __name__ == "__main__":
     x_train, x_valid, x_test, y_train, y_valid, y_test = LoadDataset(datasetRoute)
 
     if train:
+        # ------------------------------------
         # MODEL TUNING VARIABLES:
         # pre_weights = None / 'imagenet'
         # activation = 'softmax' / 'sigmoid'
@@ -131,6 +134,7 @@ if __name__ == "__main__":
         # classes = 2 / 4
         # early_stop = True / False
         # save_model = True / False
+        # -------------------------------------
         pre_weights = 'imagenet'
         activation = 'softmax'
         learning_rate = 0.01
