@@ -99,7 +99,6 @@ if __name__ == "__main__":
 
     # SETUP VARIABLES:
     # train
-    # saveModel
     # modelRoute ex: '/models/model001/'
     # datasetRoute ex: './datasets/Data_Axial_200_Rot/'
     # datasetRoute = './datasets/Data_Axial_200_Rot/'
