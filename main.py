@@ -32,7 +32,7 @@ def SaveResults(history, model, experimentRoute):
     test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
     testf = open(experimentRoute + 'results.txt', 'w')
     testf.write('+++++   LAST MODEL   +++++')
-    testf.write('The test loss: ' + str(test_loss) + '\nThe test accuracy: ' + str(test_acc))
+    testf.write('\nThe test loss: ' + str(test_loss) + '\nThe test accuracy: ' + str(test_acc))
     testf.close()
 
     preds = model.predict(x_test)
