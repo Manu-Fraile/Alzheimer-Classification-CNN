@@ -7,11 +7,12 @@ import tensorflow_addons as tfa
 
 # current default init values are the ones for Densenet121
 class DensenetCustom:
-    def __init__(self, data, modelRoute='', gr=32, eps=1.001e-5, cf=0.5, shape=(224, 224, 1), dense_blocks=None, classes=2):
+    def __init__(self, data, modelRoute='', gr=32, eps=1.001e-5, cf=0.5, shape=(112, 112, 1), dense_blocks=None, classes=2):
         self.eps = eps
         self.cf = cf    # compression factor
         self.shape = shape
         self.classes = classes
+        print(classes)
         self.gr = gr    # growth rate defined in
                         # https://openaccess.thecvf.com/content_cvpr_2017/papers/Huang_Densely_Connected_Convolutional_CVPR_2017_paper.pdf
 
@@ -32,17 +33,14 @@ class DensenetCustom:
         # Convolution Start
         x = layers.ZeroPadding2D(padding=((3, 3), (3, 3)))(inputs)
         x = layers.Conv2D(2 * self.gr, (7, 7), strides=2, use_bias=False)(x)  # 2*Growth rate, explained in paper
-        print('C:', x.shape)
 
         x = layers.BatchNormalization(axis=3, epsilon=self.eps)(x)
         x = layers.Activation('relu')(x)
         x = layers.ZeroPadding2D(padding=((1, 1), (1, 1)))(x)
         # Pooling
         x = layers.MaxPooling2D((3, 3), strides=2)(x)
-        print('P:', x.shape)
         # Dense Block 1
         x = self.DenseBlock(x, self.dense_blocks[0], self.eps, self.gr)
-        print('D1:', x.shape)
 
         # Transition Layer 1
         x = self.TransitionLayer(x, self.eps, self.cf)
@@ -64,7 +62,7 @@ class DensenetCustom:
         out = layers.Dense(self.classes, activation='softmax')(x)
 
         # Building Model
-        model = keras.Model(inputs=inputs, outputs=out, name="Model 1")
+        model = keras.Model(inputs=inputs, outputs=out)
 
         return model
 
@@ -109,12 +107,28 @@ class DensenetCustom:
 
         full_model.compile(optimizer=opt, loss=loss, metrics=['accuracy'])
 
-        class_weights = {0: len(self.y_train[self.y_train[:, 1] == 1]) / len(self.y_train),
-                         1: len(self.y_train[self.y_train[:, 0] == 1]) / len(self.y_train)}
+
+               
+        if nclasses == 2:
+            class_weights = {0: len(self.y_train[self.y_train[:, 1] == 1]) / len(self.y_train),
+                             1: len(self.y_train[self.y_train[:, 0] == 1]) / len(self.y_train)}
+        elif nclasses == 4:
+            
+            N1=len(self.y_train[self.y_train[:, 0] == 1])
+            N2=len(self.y_train[self.y_train[:, 1] == 1])
+            N3=len(self.y_train[self.y_train[:, 2] == 1])
+            N4=len(self.y_train[self.y_train[:, 3] == 1])
+            NT = 1/(1/N1+1/N2+1/N3+1/N4)
+                   
+            class_weights = {0: 1/N1*NT,
+                             1: 1/N2*NT,
+                             2: 1/N3*NT,
+                             3: 1/N4*NT,}
+      
 
         history = full_model.fit(x=self.x_train, y=self.y_train, batch_size=batch_size, epochs=epochs, verbose=1,
                                  callbacks=callbacks, validation_data=(self.x_valid, self.y_valid),
-                                 shuffle=True, class_weight=None, sample_weight=None, initial_epoch=0,
+                                 shuffle=True, class_weight=class_weights, sample_weight=None, initial_epoch=0,
                                  steps_per_epoch=None, validation_steps=None, validation_batch_size=None,
                                  validation_freq=1, max_queue_size=10, workers=1, use_multiprocessing=False)
 
