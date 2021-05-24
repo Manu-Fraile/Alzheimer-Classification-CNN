@@ -10,7 +10,7 @@ from src.ModelAlgorithms.Densenet201 import Densenet201
 from src.ModelAlgorithms.DensenetCustom import DensenetCustom
 
 
-def LoadDataset(datasetRoute):
+def LoadDataset(datasetRoute, pretrained):
     x_train = np.load(datasetRoute + 'x_train.npy')
     x_valid = np.load(datasetRoute + 'x_valid.npy')
     x_test = np.load(datasetRoute + 'x_test.npy')
@@ -22,7 +22,10 @@ def LoadDataset(datasetRoute):
     x_valid_3 = np.repeat(x_valid[..., np.newaxis], 3, -1)
     x_test_3 = np.repeat(x_test[..., np.newaxis], 3, -1)
 
-    return x_train_3, x_valid_3, x_test_3, y_train, y_valid, y_test
+    if pretrained:
+        return x_train_3, x_valid_3, x_test_3, y_train, y_valid, y_test
+    else:
+        return x_train, x_valid, x_test, y_train, y_valid, y_test
 
 
 def SaveResults(history, model, experimentRoute):
