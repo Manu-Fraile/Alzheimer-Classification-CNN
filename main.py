@@ -147,7 +147,8 @@ if __name__ == "__main__":
     experimentRoute = '/content/Alzheimer-Classification-CNN/experiments/' + experiment_name + '/'
     CheckRoute(experimentRoute)
     #datasetRoute = './datasets/' + dataset_name + '/'
-    datasetRoute = '/content/Alzheimer-Classification-CNN/datasets/' + dataset_name + '/'
+    # datasetRoute = '/content/Alzheimer-Classification-CNN/datasets/' + dataset_name + '/'
+    datasetRoute = '/content/drive/MyDrive/Colab Notebooks/' + dataset_name + '/'
 
     device_name = tf.test.gpu_device_name()
     if device_name != '/device:GPU:0':
