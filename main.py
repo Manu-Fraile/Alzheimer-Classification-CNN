@@ -94,8 +94,8 @@ def LoadModel(file):
 
 def EvaluateModel(model, x_test, y_test, nclasses):
     test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
-    # print('+++++   BEST MODEL   +++++')
-    # print('The test loss: ' + str(test_loss) + '\nThe test accuracy: ' + str(test_acc))
+    print('+++++   BEST MODEL   +++++')
+    print('The test loss: ' + str(test_loss) + '\nThe test accuracy: ' + str(test_acc))
     preds = model.predict(x_test)
     label_preds = np.argmax(preds, axis=1)
 
@@ -106,8 +106,7 @@ def EvaluateModel(model, x_test, y_test, nclasses):
 
     for j in range(nclasses):
         print(f'Eval for class {j}')
-        print(f'Accuracy: {test_acc}')
-        extra_metric(one_hot_labels[j], y_test[j])
+        extra_metric(one_hot_labels[:, j], y_test[:, j])
         print('')
 
 
