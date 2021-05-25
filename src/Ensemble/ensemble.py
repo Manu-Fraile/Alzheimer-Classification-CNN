@@ -5,7 +5,7 @@ from scipy.stats import mode
 from tensorflow.keras.models import load_model
 
 
-# Models is a list of model objects
+# models is a list of model objects
 def ensemble_prediction(models, x_test, y_test):
     # collect predictions from all models
     labels = []
