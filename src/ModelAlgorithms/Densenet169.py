@@ -6,9 +6,8 @@ import tensorflow_addons as tfa
 
 
 class Densenet169:
-    def __init__(self, data, saveModel, modelRoute):
+    def __init__(self, data, modelRoute=''):
         self.x_train, self.x_valid, self.x_test, self.y_train, self.y_valid, self.y_test = data
-        self.save = saveModel
         self.modelRoute = modelRoute
 
     def Train(self, pre_weights, activation, learning_rate,  momentum, weight_decay, batch_size, epochs, nclasses, early_stop, save_model):
@@ -36,12 +35,25 @@ class Densenet169:
 
         full_model.compile(optimizer=opt, loss=loss, metrics=['accuracy'])
 
-        class_weights = {0: len(self.y_train[self.y_train[:, 1] == 1]) / len(self.y_train),
-                         1: len(self.y_train[self.y_train[:, 0] == 1]) / len(self.y_train)}
+        if nclasses == 2:
+            class_weights = {0: len(self.y_train[self.y_train[:, 1] == 1]) / len(self.y_train),
+                             1: len(self.y_train[self.y_train[:, 0] == 1]) / len(self.y_train)}
+        elif nclasses == 4:
+
+            N1 = len(self.y_train[self.y_train[:, 0] == 1])
+            N2 = len(self.y_train[self.y_train[:, 1] == 1])
+            N3 = len(self.y_train[self.y_train[:, 2] == 1])
+            N4 = len(self.y_train[self.y_train[:, 3] == 1])
+            NT = 1 / (1 / N1 + 1 / N2 + 1 / N3 + 1 / N4)
+
+            class_weights = {0: 1 / N1 * NT,
+                             1: 1 / N2 * NT,
+                             2: 1 / N3 * NT,
+                             3: 1 / N4 * NT, }
 
         history = full_model.fit(x=self.x_train, y=self.y_train, batch_size=batch_size, epochs=epochs, verbose=1,
                                  callbacks=callbacks, validation_data=(self.x_valid, self.y_valid),
-                                 shuffle=True, class_weight=None, sample_weight=None, initial_epoch=0,
+                                 shuffle=True, class_weight=class_weights, sample_weight=None, initial_epoch=0,
                                  steps_per_epoch=None, validation_steps=None, validation_batch_size=None,
                                  validation_freq=1, max_queue_size=10, workers=1, use_multiprocessing=False)
 

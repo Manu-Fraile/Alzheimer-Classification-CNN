@@ -135,3 +135,4 @@ dmypy.json
 datasets/axial_full_binary_data/*
 datasets/coronal_full_binary_data/*
 datasets/Data_Axial_200_Rot/*
+datasets/Data_crop_4/*

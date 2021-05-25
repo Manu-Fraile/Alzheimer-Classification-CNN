@@ -92,7 +92,7 @@ def LoadModel(file):
     return model
 
 
-def EvaluateModel(model, x_test, y_test, nclasses):
+def EvaluateModel(model, x_test, y_test, nclasses=2):
     test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
     print('+++++   BEST MODEL   +++++')
     print('The test loss: ' + str(test_loss) + '\nThe test accuracy: ' + str(test_acc))
@@ -134,29 +134,31 @@ if __name__ == "__main__":
     # model_name = 'model001'
     # experiment_name = 'experiment001'
     # dataset_name = 'Data_Axial_200_Rot'
+    # classes = 2 / 4
 
-    train = True
-    model_name = 'model_ex1mod1tr1'
-    experiment_name = 'ex1mod1tr1'
+    train = False
+    model_name = 'model_ex2mod3tr1'
+    experiment_name = 'ex2mod3tr1'
     dataset_name = 'Data_crop_4'
+    nclasses = 4
 
-    #modelRoute = './models/' + model_name + '/'
-    modelRoute = '/content/Alzheimer-Classification-CNN/models/' + model_name + '/'
+    modelRoute = './models/' + model_name + '/'
+    #modelRoute = '/content/Alzheimer-Classification-CNN/models/' + model_name + '/'
     CheckRoute(modelRoute)
-    #experimentRoute = './experiments/' + experiment_name + '/'
-    experimentRoute = '/content/Alzheimer-Classification-CNN/experiments/' + experiment_name + '/'
+    experimentRoute = './experiments/' + experiment_name + '/'
+    #experimentRoute = '/content/Alzheimer-Classification-CNN/experiments/' + experiment_name + '/'
     CheckRoute(experimentRoute)
-    #datasetRoute = './datasets/' + dataset_name + '/'
+    datasetRoute = './datasets/' + dataset_name + '/'
     # datasetRoute = '/content/Alzheimer-Classification-CNN/datasets/' + dataset_name + '/'
-    datasetRoute = '/content/drive/MyDrive/Colab Notebooks/' + dataset_name + '/'
+    #datasetRoute = '/content/drive/MyDrive/Colab Notebooks/' + dataset_name + '/'
 
     device_name = tf.test.gpu_device_name()
     if device_name != '/device:GPU:0':
         raise SystemError('GPU device not found')
     print('Found GPU at: {}'.format(device_name))
 
-    x_train, x_valid, x_test, y_train, y_valid, y_test = LoadDataset(datasetRoute, False)
-    print(x_train.shape)
+    pretrained = True
+    x_train, x_valid, x_test, y_train, y_valid, y_test = LoadDataset(datasetRoute, pretrained)
 
     if train:
         # ------------------------------------
@@ -168,7 +170,6 @@ if __name__ == "__main__":
         # weight_decay = float / None
         # batch_size = int, e.g. 32
         # epochs = int
-        # classes = 2 / 4
         # early_stop = True / False
         # save_model = True / False
         # -------------------------------------
@@ -176,23 +177,23 @@ if __name__ == "__main__":
         activation = 'softmax'
         learning_rate = 0.01
         momentum = 0.9
-        weight_decay = 0.06
-        batch_size = 64
+        weight_decay = None
+        batch_size = 32
         epochs = 40
-        nclasses = 4
+        early_stop = True
+        save_model = True
+
         gr = 32
         eps = 1.001e-5
         cf = 0.5
         shape = (112, 112, 1)
         dense_blocks = [6, 12, 24, 16]
-        early_stop = True
-        save_model = True
 
         data = [x_train, x_valid, x_test, y_train, y_valid, y_test]
         #selectedModel = Densenet121(data, modelRoute)
         #selectedModel = Densenet169(data, modelRoute)
-        #selectedModel = Densenet201(data, modelRoute)
-        selectedModel = DensenetCustom(data, modelRoute, gr, eps, cf, shape, dense_blocks, nclasses)
+        selectedModel = Densenet201(data, modelRoute)
+        #selectedModel = DensenetCustom(data, modelRoute, gr, eps, cf, shape, dense_blocks, nclasses)
 
         model, history = selectedModel.Train(pre_weights, activation, learning_rate,  momentum,
                                              weight_decay, batch_size, epochs, nclasses, early_stop,
@@ -204,4 +205,4 @@ if __name__ == "__main__":
         model = LoadModel(modelRoute)
 
     # nclasses set to 2 by default
-    EvaluateModel(model, x_test, y_test, 2)
+    EvaluateModel(model, x_test, y_test, nclasses)

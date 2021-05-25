@@ -107,8 +107,6 @@ class DensenetCustom:
 
         full_model.compile(optimizer=opt, loss=loss, metrics=['accuracy'])
 
-
-               
         if nclasses == 2:
             class_weights = {0: len(self.y_train[self.y_train[:, 1] == 1]) / len(self.y_train),
                              1: len(self.y_train[self.y_train[:, 0] == 1]) / len(self.y_train)}
