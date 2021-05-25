@@ -181,11 +181,11 @@ if __name__ == "__main__":
         epochs = 40
         nclasses = 4
         gr = 32
-        eps =1.001e-5
-        cf=0.5
-        shape=(112, 112, 1)
-        dense_blocks=[6, 12, 24, 16]
-        early_stop =  True
+        eps = 1.001e-5
+        cf = 0.5
+        shape = (112, 112, 1)
+        dense_blocks = [6, 12, 24, 16]
+        early_stop = True
         save_model = True
 
         data = [x_train, x_valid, x_test, y_train, y_valid, y_test]
