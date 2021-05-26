@@ -137,8 +137,8 @@ if __name__ == "__main__":
     # classes = 2 / 4
 
     train = False
-    model_name = 'model_ex2mod3tr1'
-    experiment_name = 'ex2mod3tr1'
+    model_name = 'model_ex1mod1tr1'
+    experiment_name = 'ex1mod1tr1'
     dataset_name = 'Data_crop_4'
     nclasses = 4
 
@@ -177,8 +177,8 @@ if __name__ == "__main__":
         activation = 'softmax'
         learning_rate = 0.01
         momentum = 0.9
-        weight_decay = None
-        batch_size = 32
+        weight_decay = 0.06
+        batch_size = 64
         epochs = 40
         early_stop = True
         save_model = True
@@ -192,8 +192,8 @@ if __name__ == "__main__":
         data = [x_train, x_valid, x_test, y_train, y_valid, y_test]
         #selectedModel = Densenet121(data, modelRoute)
         #selectedModel = Densenet169(data, modelRoute)
-        selectedModel = Densenet201(data, modelRoute)
-        #selectedModel = DensenetCustom(data, modelRoute, gr, eps, cf, shape, dense_blocks, nclasses)
+        #selectedModel = Densenet201(data, modelRoute)
+        selectedModel = DensenetCustom(data, modelRoute, classes=nclasses)
 
         model, history = selectedModel.Train(pre_weights, activation, learning_rate,  momentum,
                                              weight_decay, batch_size, epochs, nclasses, early_stop,
