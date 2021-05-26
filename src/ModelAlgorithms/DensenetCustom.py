@@ -94,6 +94,8 @@ class DensenetCustom:
 
         if weight_decay is None:
             opt = tf.keras.optimizers.SGD(learning_rate=learning_rate, momentum=momentum, nesterov=True)
+            #opt = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+            #print('Adam')
         else:
             opt = tfa.optimizers.SGDW(weight_decay=weight_decay, learning_rate=learning_rate, momentum=momentum,
                                       nesterov=True)
