@@ -1,0 +1,3 @@
++++++   LAST MODEL   +++++
+The test loss: 0.39901599287986755
+The test accuracy: 0.8544061183929443
