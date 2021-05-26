@@ -34,7 +34,7 @@ def SaveResults(history, model, experimentRoute):
 
     test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
     testf = open(experimentRoute + 'results.txt', 'w')
-    testf.write('+++++   LAST MODEL   +++++')
+    testf.write('+++++   BEST MODEL   +++++')
     testf.write('\nThe test loss: ' + str(test_loss) + '\nThe test accuracy: ' + str(test_acc))
     testf.close()
 
@@ -198,7 +198,7 @@ if __name__ == "__main__":
         model, history = selectedModel.Train(pre_weights, activation, learning_rate,  momentum,
                                              weight_decay, batch_size, epochs, nclasses, early_stop,
                                              save_model)
-
+        model = LoadModel(modelRoute)
         SaveResults(history, model, experimentRoute)
 
     else:
