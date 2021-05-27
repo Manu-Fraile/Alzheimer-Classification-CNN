@@ -1,2 +1,5 @@
 datasets/Data_Axial_200_Rot.zip filter=lfs diff=lfs merge=lfs -text
-models/** filter=lfs diff=lfs merge=lfs -text
+models/model_ex5mod3tr3 filter=lfs diff=lfs merge=lfs -text
+models/model_ex5mod4tr3 filter=lfs diff=lfs merge=lfs -text
+models/model_ex6mod2tr2 filter=lfs diff=lfs merge=lfs -text
+models/model_ex6mod3tr2 filter=lfs diff=lfs merge=lfs -text

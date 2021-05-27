@@ -1,4 +1,3 @@
-import numpy as np
 import tensorflow as tf
 import tensorflow.python.keras.losses as tfloss
 from tensorflow.keras import layers, models

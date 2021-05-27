@@ -4,6 +4,8 @@ import tensorflow as tf
 import os
 import errno
 
+import src.Ensembles.Ensemble as Ensemble
+import src.Evaluators.Evaluator as Evaluator
 from src.ModelAlgorithms.Densenet121 import Densenet121
 from src.ModelAlgorithms.Densenet169 import Densenet169
 from src.ModelAlgorithms.Densenet201 import Densenet201
@@ -92,51 +94,18 @@ def LoadModel(file):
     return model
 
 
-def EvaluateModel(model, x_test, y_test, nclasses=2):
-    test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
-    print('+++++   BEST MODEL   +++++')
-    print('The test loss: ' + str(test_loss) + '\nThe test accuracy: ' + str(test_acc))
-    preds = model.predict(x_test)
-    label_preds = np.argmax(preds, axis=1)
-
-    # for precision and rest
-    one_hot_labels = np.zeros((len(y_test), nclasses))
-    for i in range(len(y_test)):
-        one_hot_labels[i, label_preds[i]] = 1
-
-    for j in range(nclasses):
-        print(f'Eval for class {j}')
-        extra_metric(one_hot_labels[:, j], y_test[:, j])
-        print('')
-
-
-def extra_metric(predicted, true):
-    TP = np.abs(np.sum(predicted * true))
-    TN = np.abs(np.sum((predicted - 1) * (true - 1)))
-    FP = np.abs(np.sum(predicted * (true - 1)))
-    FN = np.abs(np.sum((predicted - 1) * true))
-
-    precision = TP / (TP + FP)
-    recall = TP / (TP + FN)
-    f1 = 2 * precision * recall / (precision + recall)
-
-    print(f'Precision: {precision}')
-    print(f'Recall:    {recall}')
-    print(f'f1-score:  {f1}')
-
-    # return precision, recall, f1
-
-
 if __name__ == "__main__":
 
     # SETUP VARIABLES:
-    # train
+    # train = True / False
+    # ensemble_mode = True / False
     # model_name = 'model001'
     # experiment_name = 'experiment001'
     # dataset_name = 'Data_Axial_200_Rot'
     # classes = 2 / 4
 
     train = False
+    ensemble_mode = False
     model_name = 'model_ex1mod1tr1'
     experiment_name = 'ex1mod3tr1'
     dataset_name = 'Data_crop_4'
@@ -201,8 +170,20 @@ if __name__ == "__main__":
         model = LoadModel(modelRoute)
         SaveResults(history, model, experimentRoute)
 
+    elif ensemble_mode:
+        modelRoute1 = './models/model_ex1mod1tr1/'
+        model1 = tf.keras.models.load_model(modelRoute1 + 'trained_model.h5')
+        modelRoute2 = './models/model_ex1mod2tr1/'
+        model2 = tf.keras.models.load_model(modelRoute2 + 'trained_model.h5')
+        modelRoute3 = './models/model_ex1mod3tr1/'
+        model3 = tf.keras.models.load_model(modelRoute3 + 'trained_model.h5')
+
+        models = [model1, model2, model3]
+        vote_results = Ensemble.EnsemblePrediction(models, x_test, y_test)
+
     else:
         model = LoadModel(modelRoute)
 
-    # nclasses set to 2 by default
-    EvaluateModel(model, x_test, y_test, nclasses)
+    if not ensemble_mode:
+        # nclasses set to 2 by default
+        Evaluator.EvaluateModel(model, x_test, y_test, nclasses)

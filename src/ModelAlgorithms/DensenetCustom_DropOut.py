@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers, backend, models
+from tensorflow.keras import layers, backend
 import tensorflow.python.keras.losses as tfloss
 import tensorflow_addons as tfa
 
