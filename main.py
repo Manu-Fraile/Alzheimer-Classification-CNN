@@ -138,9 +138,10 @@ if __name__ == "__main__":
 
     train = False
     model_name = 'model_ex1mod1tr1'
-    experiment_name = 'ex1mod1tr1'
+    experiment_name = 'ex1mod3tr1'
     dataset_name = 'Data_crop_4'
     nclasses = 4
+    pretrained_dataset = False
 
     modelRoute = './models/' + model_name + '/'
     #modelRoute = '/content/Alzheimer-Classification-CNN/models/' + model_name + '/'
@@ -157,8 +158,7 @@ if __name__ == "__main__":
         raise SystemError('GPU device not found')
     print('Found GPU at: {}'.format(device_name))
 
-    pretrained = True
-    x_train, x_valid, x_test, y_train, y_valid, y_test = LoadDataset(datasetRoute, pretrained)
+    x_train, x_valid, x_test, y_train, y_valid, y_test = LoadDataset(datasetRoute, pretrained_dataset)
 
     if train:
         # ------------------------------------
@@ -173,7 +173,7 @@ if __name__ == "__main__":
         # early_stop = True / False
         # save_model = True / False
         # -------------------------------------
-        pre_weights = 'imagenet'
+        pre_weights = None
         activation = 'softmax'
         learning_rate = 0.01
         momentum = 0.9
@@ -183,7 +183,7 @@ if __name__ == "__main__":
         early_stop = True
         save_model = True
 
-        gr = 32
+        gr = 48
         eps = 1.001e-5
         cf = 0.5
         shape = (112, 112, 1)
@@ -193,7 +193,7 @@ if __name__ == "__main__":
         #selectedModel = Densenet121(data, modelRoute)
         #selectedModel = Densenet169(data, modelRoute)
         #selectedModel = Densenet201(data, modelRoute)
-        selectedModel = DensenetCustom(data, modelRoute, classes=nclasses)
+        selectedModel = DensenetCustom(data, modelRoute, gr=gr, classes=nclasses)
 
         model, history = selectedModel.Train(pre_weights, activation, learning_rate,  momentum,
                                              weight_decay, batch_size, epochs, nclasses, early_stop,

@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers, backend, models
+from tensorflow.keras import layers, backend
 import tensorflow.python.keras.losses as tfloss
 import tensorflow_addons as tfa
 
@@ -17,7 +17,7 @@ class DensenetCustom:
                         # https://openaccess.thecvf.com/content_cvpr_2017/papers/Huang_Densely_Connected_Convolutional_CVPR_2017_paper.pdf
 
         if dense_blocks is None:
-            self.dense_blocks = [6, 12, 24, 16]
+            self.dense_blocks = [6, 12, 36, 24]
         else:
             self.dense_blocks = dense_blocks
 
@@ -94,8 +94,8 @@ class DensenetCustom:
 
         if weight_decay is None:
             opt = tf.keras.optimizers.SGD(learning_rate=learning_rate, momentum=momentum, nesterov=True)
-            #opt = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-            #print('Adam')
+            # opt = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+            # print('Adam')
         else:
             opt = tfa.optimizers.SGDW(weight_decay=weight_decay, learning_rate=learning_rate, momentum=momentum,
                                       nesterov=True)
@@ -114,17 +114,16 @@ class DensenetCustom:
                              1: len(self.y_train[self.y_train[:, 0] == 1]) / len(self.y_train)}
         elif nclasses == 4:
             
-            N1=len(self.y_train[self.y_train[:, 0] == 1])
-            N2=len(self.y_train[self.y_train[:, 1] == 1])
-            N3=len(self.y_train[self.y_train[:, 2] == 1])
-            N4=len(self.y_train[self.y_train[:, 3] == 1])
+            N1 = len(self.y_train[self.y_train[:, 0] == 1])
+            N2 = len(self.y_train[self.y_train[:, 1] == 1])
+            N3 = len(self.y_train[self.y_train[:, 2] == 1])
+            N4 = len(self.y_train[self.y_train[:, 3] == 1])
             NT = 1/(1/N1+1/N2+1/N3+1/N4)
                    
             class_weights = {0: 1/N1*NT,
                              1: 1/N2*NT,
                              2: 1/N3*NT,
-                             3: 1/N4*NT,}
-      
+                             3: 1/N4*NT}
 
         history = full_model.fit(x=self.x_train, y=self.y_train, batch_size=batch_size, epochs=epochs, verbose=1,
                                  callbacks=callbacks, validation_data=(self.x_valid, self.y_valid),

@@ -20,17 +20,23 @@ def ensemble_prediction(models, x_test, y_test):
     print(f'Ensemble accuracy: {acc}')
     return majority_vote
 
-modelRoute1 = '/content/drive/MyDrive/models/model_ex3mod16tr1/'
+
+modelRoute1 = '../../models/model_ex1mod1tr1/'
 model1 = tf.keras.models.load_model(modelRoute1 + 'trained_model.h5')
-modelRoute2 = '/content/drive/MyDrive/models/model_ex3mod16tr2/'
+print(modelRoute1 + 'trained_model.h5')
+modelRoute2 = '../../models/model_ex1mod2tr1/'
 model2 = tf.keras.models.load_model(modelRoute2 + 'trained_model.h5')
-modelRoute3 = '/content/drive/MyDrive/models/model_ex3mod16tr3/'
+print(modelRoute2 + 'trained_model.h5')
+
+modelRoute3 = '../../models/model_ex1mod3tr1/'
 model3 = tf.keras.models.load_model(modelRoute3 + 'trained_model.h5')
+print(modelRoute3 + 'trained_model.h5')
+
 
 models = [model1, model2, model3]
 
-dataset_name = 'Data_crop'
-datasetRoute = '/content/drive/MyDrive/Colab Notebooks/' + dataset_name + '/'
+dataset_name = 'Data_crop_4'
+datasetRoute = '../../' + dataset_name + '/'
 x_test = np.load(datasetRoute + 'x_test.npy')
 y_test = np.load(datasetRoute + 'y_test.npy')
 
