@@ -1,10 +1,12 @@
 # Diagnostic Classification of Alzheimer’s Disease using an Ensemble of CNNs
 
-This repository contain the group project developed at KTH within the Deep Learning in Data Science course by:
+This repository contains the group project developed at KTH within the Deep Learning in Data Science course by:
 - Anna Fernandez-Rajal
 - Carolin Danker
 - Ilona Toikka
 - Manuel Fraile
+
+This work received the maximum possible grade, an A.
 
 ## Aim of this work
 The goal of this work is to develop an algorithm that classifies images in order to detect Alzheimer's Disease in patients using Convolutional Neural Networks. This project is inspired by:
