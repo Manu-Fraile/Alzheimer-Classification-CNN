@@ -26,3 +26,8 @@ Install:
 ```
 git clone https://github.com/Manu-Fraile/Alzheimer-Classification-CNN.git
 ```
+
+## LICENSE
+MIT License
+
+Copyright (c) 2021 Manu Fraile
